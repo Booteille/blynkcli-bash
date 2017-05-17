@@ -274,7 +274,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
         sudo rm $BLYNKCLI_EXECUTABLE
       fi
     elif [[ $1 == "version" ]]; then
-      echo "$BLYNKCLI_VERSION";
+      echo $BLYNKCLI_VERSION
     else
       usage
     fi
