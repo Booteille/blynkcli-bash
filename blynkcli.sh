@@ -285,7 +285,8 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           warning "No update available."
         else
           info "New version available. Updating to $version"
-          sudo wget -c -nv --show-progress "$latest" -O "$BLYNKCLI_EXECUTABLE"
+          sudo wget -c -nv --show-progress "$latest" -O /tmp/blynkcli
+          sudo mv /tmp/blynkcli $BLYNKCLI_EXECUTABLE
 
           info "Update complete."
         fi
