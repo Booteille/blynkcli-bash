@@ -55,7 +55,7 @@ usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
 
 DATETIME=$(date +"%d %h %Y %H:%M:%S")
 
-BLYNKCLI_VERSION="v0.1.0"
+BLYNKCLI_VERSION="v0.1.1"
 BLYNKCLI_EXECUTABLE="/usr/bin/blynkcli"
 BLYNK_JAR="/var/blynk/server-0.24.4.jar"
 BLYNK_FOLDER="/var/blynk"
