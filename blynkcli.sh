@@ -28,6 +28,8 @@ IFS=$'\n\t'       # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 #/
 #/    setup           - install blynkcli
 #/
+#/    self-update     - check if an update is available for Blynk CLI
+#/
 #/    version         - print version of blynkcli
 #/
 #/    server [OPTION]
@@ -273,8 +275,21 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
       if which blynkcli >> /dev/null; then
         sudo rm $BLYNKCLI_EXECUTABLE
       fi
+    elif [[ $1 == "self-update" ]]; then
+      if which blynkcli >> /dev/null; then
+        info "Updating Blynk CLI..."
+        latest=$(curl -s "https://api.github.com/repos/booteille/blynkcli/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)
+
+        if [[ "$(blynkcli version)" == "$(echo "$latest" | cut -d / -f8)" ]]; then
+          warning "No update available."
+        else
+          sudo wget -c -nv --show-progress "$latest" -O "$BLYNKCLI_EXECUTABLE"
+        fi
+      else
+        error "Blynk CLI not installed. Run \`./blynkcli setup\` first"
+      fi
     elif [[ $1 == "version" ]]; then
-      echo "$BLYNKCLI_VERSION";
+      echo $BLYNKCLI_VERSION
     else
       usage
     fi
