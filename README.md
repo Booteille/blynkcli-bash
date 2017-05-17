@@ -1,6 +1,5 @@
 # blynkcli
 
-A short utility to manage a Blynk server.
+A short utility to manage Blynk server from CLI
 
 This project is actually fully experimental.
-Do not use it in production.
