@@ -130,7 +130,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
                        # Added by Blynk CLI\nif which blynkcli >> /dev/null; then\n\tblynkcli start >> /dev/null\nfi\n\nexit 0" /etc/rc.local
               info "Blynk successfully installed"
             else
-              echo "Blynk server already installed"
+              error "Blynk server already installed"
             fi
           fi
         elif [[ $2 == "uninstall" ]]; then
