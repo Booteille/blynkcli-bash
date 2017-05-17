@@ -279,11 +279,15 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
       if which blynkcli >> /dev/null; then
         info "Updating Blynk CLI..."
         latest=$(curl -s "https://api.github.com/repos/booteille/blynkcli/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)
+        version=$(echo "$latest" | cut -d / -f8)
 
-        if [[ "$(blynkcli version)" == "$(echo "$latest" | cut -d / -f8)" ]]; then
+        if [[ "$(blynkcli version)" == "$version" ]]; then
           warning "No update available."
         else
+          info "New version available. Updating to $version"
           sudo wget -c -nv --show-progress "$latest" -O "$BLYNKCLI_EXECUTABLE"
+
+          info "Update complete."
         fi
       else
         error "Blynk CLI not installed. Run \`./blynkcli setup\` first"
