@@ -165,11 +165,11 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               info "Downloading new version ($new_jar)"
               sudo -u blynk wget -c -q --show-progress "$latest" -O "$new_path"
 
+              # Replace old server
               if [[ -f "$BLYNK_JAR" ]]; then
                 sudo -u blynk rm "$BLYNK_JAR"
               fi
 
-              # Replace old server
               sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_path\"#" $BLYNKCLI_EXECUTABLE
 
               info "Update complete."
