@@ -273,8 +273,10 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
                     target_folder=$(find $BLYNK_BACKUP_FOLDER -name "$3*")
                   elif [[ $backup_count == 0 ]]; then
                     error "There is no backup using this name."
+                    exit 1
                   else
                     error "There are more than one backup following this name. Use the full name instead"
+                    exit 1
                   fi
 
                   blynkcli server stop
