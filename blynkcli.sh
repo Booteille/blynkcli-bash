@@ -57,7 +57,7 @@ DATETIME=$(date +"%d %h %Y %H:%M:%S")
 
 BLYNKCLI_VERSION="v0.1.1"
 BLYNKCLI_EXECUTABLE="/usr/bin/blynkcli"
-BLYNK_JAR="/var/blynk/server-0.24.4.jar"
+BLYNK_JAR=""
 BLYNK_FOLDER="/var/blynk"
 BLYNK_DATA="$BLYNK_FOLDER/data"
 BLYNK_BACKUP_FOLDER="$BLYNK_FOLDER/backup"
@@ -122,7 +122,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
               info "Downloading latest server release: $(basename "$serverFile")"
               sudo wget -c -q --show-progress "$serverFile" -O "$jar"
-              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$jar\"#" "$0"
+              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$jar\"#" $BLYNKCLI_EXECUTABLE
 
               # Update default settings for enhanced security
               printf "admin.email=admin@blynk.cc\nadmin.pass=fablab\nlogs.folder=%s/logs" $BLYNK_FOLDER | sudo -u blynk tee "$BLYNK_SERVER_CONFIG" >> /dev/null
@@ -146,7 +146,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               sudo rm -R $BLYNK_FOLDER
             fi
 
-            sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"\"#" "$0"
+            sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"\"#" $BLYNKCLI_EXECUTABLE
 
             # Désactive le lancement automatique lors de la connexion de l'utilisateur
             first_line=$(grep -nr "# Added by Blynk CLI" /etc/rc.local | cut -d : -f 1 )
@@ -171,7 +171,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               sudo -u blynk wget -c -nv --show-progress "$latest" -O "$new_path"
 
               # Replace old server
-              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_jar\"#" "$0"
+              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_jar\"#" $BLYNKCLI_EXECUTABLE
 
               if [[ -f "$BLYNK_JAR" ]]; then
                 sudo -u blynk rm "$BLYNK_JAR"
