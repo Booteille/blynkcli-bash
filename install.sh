@@ -277,9 +277,13 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           warning "No update available."
         else
           info "New version available. Updating to $version"
+          jar=$(sed -n -e '/^BLYNK_JAR/p' /usr/bin/blynkcli | cut -d \" -f2 )
+
           sudo wget -c -q --show-progress "$latest" -O /tmp/blynkcli
           sudo mv /tmp/blynkcli $BLYNKCLI_EXECUTABLE
           sudo chmod +x $BLYNKCLI_EXECUTABLE
+
+          sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$jar\"#" $BLYNKCLI_EXECUTABLE
 
           info "Update complete."
         fi
