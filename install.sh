@@ -167,7 +167,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               fi
 
               # Replace old server
-              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_jar\"#" $BLYNKCLI_EXECUTABLE
+              sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_path\"#" $BLYNKCLI_EXECUTABLE
 
               info "Update complete."
             fi
@@ -198,8 +198,10 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           elif [[ $2 == "status" ]]; then
             if [[ -f $BLYNK_PID_PATH ]] && ps -p "$(cat /run/blynk.pid)" -ge 1 > /dev/null; then
               info "Server is \e[32monline\e[0m"
+              exit 0
             else
               info "Server is \e[31moffline\e[0m"
+              exit 1
             fi
           elif [[ $2 == "backup" ]]; then
             if [[ ! -d "$BLYNK_BACKUP_FOLDER" ]]; then
