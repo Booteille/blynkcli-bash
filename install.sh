@@ -309,6 +309,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             info "New version available. Updating to $version"
             sudo wget -c -q --show-progress "$latest" -O /tmp/blynkcli
             sudo mv /tmp/blynkcli $BLYNKCLI_EXECUTABLE
+            sudo chmod +x $BLYNKCLI_EXECUTABLE
 
             info "Update complete."
           fi
