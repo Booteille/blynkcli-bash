@@ -162,6 +162,13 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               warning "No update available for Blynk server"
             else
               info "An update is available"
+              start_server=0
+
+              if [[ -f $BLYNK_PID_PATH ]]; then
+                blynkcli server stop
+                start_server=1
+              fi
+
               info "Downloading new version ($new_jar)"
               sudo -u blynk wget -c -q --show-progress "$latest" -O "$new_path"
 
@@ -172,7 +179,10 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
               sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_path\"#" $BLYNKCLI_EXECUTABLE
 
-              info "Update complete."
+              if [[ $start_server == 1 ]]; then
+                blynkcli server start
+              fi
+              info "Update complete"
             fi
           elif [[ $2 == "start" ]]; then
             if [[ ! -f $BLYNK_PID_PATH ]]; then
