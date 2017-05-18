@@ -167,7 +167,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               else
                 info "An update is available"
                 info "Downloading new version ($new_jar)"
-                sudo -u blynk wget -c -nv --show-progress "$latest" -O "$new_path"
+                sudo -u blynk wget -c -q --show-progress "$latest" -O "$new_path"
 
                 # Replace old server
                 sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"$new_jar\"#" $BLYNKCLI_EXECUTABLE
@@ -307,7 +307,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             warning "No update available."
           else
             info "New version available. Updating to $version"
-            sudo wget -c -nv --show-progress "$latest" -O /tmp/blynkcli
+            sudo wget -c -q --show-progress "$latest" -O /tmp/blynkcli
             sudo mv /tmp/blynkcli $BLYNKCLI_EXECUTABLE
 
             info "Update complete."
