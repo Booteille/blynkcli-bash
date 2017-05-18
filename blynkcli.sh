@@ -60,6 +60,7 @@ BLYNKCLI_EXECUTABLE="/usr/bin/blynkcli"
 BLYNK_JAR="/var/blynk/server-0.24.4.jar"
 BLYNK_FOLDER="/var/blynk"
 BLYNK_DATA="$BLYNK_FOLDER/data"
+BLYNK_BACKUP_FOLDER="$BLYNK_FOLDER/backup"
 BLYNK_SERVER_CONFIG="$BLYNK_FOLDER/server.properties"
 BLYNK_PID_PATH="/run/blynk.pid"
 
@@ -78,7 +79,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
       if which blynkcli >> /dev/null; then
         error "Blynk CLI is already installed"
       else
-        info "Installing Blynk CLI..."
+        info "Installing Blynk CLI"
         sudo cp "$0" $BLYNKCLI_EXECUTABLE
 
         info "Installation complete"
@@ -90,14 +91,14 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
         if [[ $2 == "install" ]]; then
           if which blynkcli >> /dev/null; then
             if [[ ! -f $BLYNK_JAR ]]; then
-              info "Installing Blynk server..."
+              info "Installing Blynk server"
               set +e # Disallow temporary the programm to exit if an error occurs
               dpkg -l libxrender &> /dev/null || true
               lib_exists=$?
               set -e
 
               if ! which java >> /dev/null || [[ $lib_exists -eq 1 ]]; then
-                info "Installing dependencies..."
+                info "Installing dependencies"
                 sudo apt update
                 sudo apt install oracle-java8-jdk libxrender1
               fi
@@ -107,7 +108,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               fi
 
               if ! id "blynk" >/dev/null 2>&1; then
-                info "Creating Blynk user..."
+                info "Creating Blynk user"
                 sudo adduser --system --no-create-home --disabled-login --group --quiet blynk
               fi
 
@@ -126,7 +127,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               # Update default settings for enhanced security
               printf "admin.email=admin@blynk.cc\nadmin.pass=fablab\nlogs.folder=%s/logs" $BLYNK_FOLDER | sudo -u blynk tee "$BLYNK_SERVER_CONFIG" >> /dev/null
 
-              info "Setting Blynk server to launch on startup..."
+              info "Setting Blynk server to launch on startup"
               last_line=$(grep -n '^exit 0' /etc/rc.local | tail -1 | cut -d: -f1)
               sudo sed -i "$last_line c \
                        # Added by Blynk CLI\nif which blynkcli >> /dev/null; then\n\tblynkcli server start >> /dev/null\nfi\n\nexit 0" /etc/rc.local
@@ -139,7 +140,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           if which blynkcli >> /dev/null; then
             blynkcli server stop
 
-            info "Uninstalling Blynk server..."
+            info "Uninstalling Blynk server"
 
             if [[ -d $BLYNK_FOLDER ]]; then
               sudo rm -R $BLYNK_FOLDER
@@ -156,7 +157,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           fi
         elif [[ $2 == "update" ]]; then
           if which blynkcli >> /dev/null; then
-            info "Updating Blynk server..."
+            info "Updating Blynk server"
 
             # Retrieve last server release informations
             latest=$(curl -s "https://api.github.com/repos/blynkkk/blynk-server/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)
@@ -166,7 +167,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             if [[ ! -z ${BLYNK_JAR+x} ]] && [[ $new_jar  == "$(basename "$BLYNK_JAR")" ]]; then
               warning "No update available for Blynk server"
             else
-              info "An update is available.\nDownloading new version ($new_jar)..."
+              info "An update is available.\nDownloading new version ($new_jar)"
               sudo -u blynk wget -c -nv --show-progress "$latest" -O "$new_path"
 
               # Replace old server
@@ -183,8 +184,8 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           if which blynkcli >> /dev/null; then
             if [[ ! -f $BLYNK_PID_PATH ]]; then
               if [[ -f $BLYNK_JAR ]]; then
-                info "Starting server..."
-                sudo -u blynk echo "Asking for password..." >> /dev/null
+                info "Starting server"
+                sudo -u blynk echo "Asking for password" >> /dev/null
                 nohup sudo -u blynk java -jar "$BLYNK_JAR" -dataFolder $BLYNK_DATA -serverConfig $BLYNK_SERVER_CONFIG > /tmp/blynkcli.log 2>&1 &
                 echo $! | sudo tee $BLYNK_PID_PATH >> /dev/null
               else
@@ -198,7 +199,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           fi
         elif [[ $2 == "stop" ]]; then
           if which blynkcli >> /dev/null; then
-            info "Stopping server..."
+            info "Stopping server"
             if [[ -f $BLYNK_PID_PATH ]] && ps -p "$(cat /run/blynk.pid)" -ge 1 > /dev/null; then
               sudo kill -USR1 "$(cat /run/blynk.pid)"
               sudo rm $BLYNK_PID_PATH
@@ -227,17 +228,28 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           fi
         elif [[ $2 == "backup" ]]; then
           if which blynkcli >> /dev/null; then
-            if [[ ! -d "$BLYNK_FOLDER/backup" ]]; then
-              sudo -u blynk mkdir "$BLYNK_FOLDER/backup"
+            if [[ ! -d "$BLYNK_BACKUP_FOLDER" ]]; then
+              sudo -u blynk mkdir "$BLYNK_BACKUP_FOLDER"
             fi
 
             if [[ -d "$BLYNK_DATA" ]]; then
-              info "Backing up data folder..."
-              backup_folder="$BLYNK_FOLDER/backup/$(date +"%Y-%m-%d_%H-%M-%S")"
+              if [[ -z ${3+x} ]]; then
+                echo -n "Enter the backup name: "
+                read -r -e backup_name
+              else
+                backup_name="$3"
+              fi
 
-              sudo -u blynk cp -R "$BLYNK_DATA" "$backup_folder"
+              if [[ "$backup_name" =~ ^[a-zA-Z0-9-]+$ ]]; then
+                info "Backing up data folder"
+                backup_folder="$BLYNK_BACKUP_FOLDER/${backup_name}_$(date +"%Y-%m-%d_%H-%M-%S")"
 
-              info "Backup saved as $backup_folder"
+                sudo -u blynk cp -R "$BLYNK_DATA" "$backup_folder"
+
+                info "Backup $backup_name saved as $backup_folder"
+              else
+                error "Invalid name. Only alphanumeric characters and hyphen -are supported."
+              fi
             else
               error "There are no data to save. You must run the server once first before making a backup"
             fi
@@ -248,27 +260,36 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
           if which blynkcli >> /dev/null; then
             if [[ -z ${3+x} ]]; then
               error "You must provide the name of a backup.
-              Example: blynkcli restore 2017-05-16_00-30-54"
+              Examples:
+                blynkcli restore my-backup-name
+                blynkcli restore my-backup-name_2017-05-16_00-30-54"
             else
-              target_folder="$BLYNK_FOLDER/backup/$3"
+              if [[ $3 =~ .*_?[0-9]{4}(-[0-9]{2}){2}_([0-9]{2}-){2}[0-9]{2}$ ]]; then
+                target_folder="$BLYNK_BACKUP_FOLDER/$3"
+              else
+                backup_count=$(find $BLYNK_BACKUP_FOLDER -name "$3*" | wc -l)
+                if [[ $backup_count == 1 ]]; then
+                  target_folder=$(find $BLYNK_BACKUP_FOLDER -name "$3*")
+                elif [[ $backup_count == 0 ]]; then
+                  error "There is no backup using this name."
+                else
+                  error "There are more than one backup following this name. Use the full name instead"
+                fi
 
-              if [[ -d $target_folder ]]; then
                 blynkcli server stop
 
-                info "Restoring from backup..."
+                info "Restoring from backup $target_folder"
                 sudo -u blynk rm -R "$BLYNK_DATA"
                 sudo -u blynk cp -R "$target_folder" "$BLYNK_DATA"
 
                 blynkcli server start
-              else
-                error "Backup not found"
               fi
             fi
           else
             error "Blynk CLI not installed. Run \`./blynkcli setup\` first"
           fi
         else
-          error "Blynk CLI not installed. Run \`./blynkcli setup\` first"
+          usage
         fi
       fi
     elif [[ $1 == "remove" ]]; then
@@ -277,8 +298,8 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
       fi
     elif [[ $1 == "self-update" ]]; then
       if which blynkcli >> /dev/null; then
-        info "Updating Blynk CLI..."
-        latest=$(curl -s "https://api.github.com/repos/booteille/blynkcli/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)
+        info "Updating Blynk CLI"
+        latest="$(curl -s "https://api.github.com/repos/booteille/blynkcli/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)"
         version=$(echo "$latest" | cut -d / -f8)
 
         if [[ "$(blynkcli version)" == "$version" ]]; then
