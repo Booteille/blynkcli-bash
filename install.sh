@@ -206,7 +206,9 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               error "Server is already offline"
             fi
           elif [[ $2 == "restart" ]]; then
-            blynkcli server stop
+            if [[ -f $BLYNK_PID_PATH ]]; then
+              blynkcli server stop
+            fi
             blynkcli server start
           elif [[ $2 == "status" ]]; then
             if [[ -f $BLYNK_PID_PATH ]] && ps -p "$(cat /run/blynk.pid)" -ge 1 > /dev/null; then
