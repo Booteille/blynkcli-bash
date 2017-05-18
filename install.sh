@@ -16,8 +16,8 @@ IFS=$'\n\t'       # http://redsymbol.net/articles/unofficial-bash-strict-mode/
 #/    blynkcli server status    # check status of the server
 #/    blynkcli server stop      # stop the server
 #/
-#/    blynkcli server backup                       # make a backup of the server
-#/    blynkcli server restore 2017-05-01_00-30-28  # restore from backup
+#/    blynkcli server backup my-backup-name                       # make a backup of the server
+#/    blynkcli server restore my-backup-name_2017-05-01_00-30-28  # restore from backup
 #/
 #/ Options:
 #/    remove          - uninstall blynkcli
