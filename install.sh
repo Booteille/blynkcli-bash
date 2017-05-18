@@ -51,7 +51,7 @@ usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
 
 DATETIME=$(date +"%d %h %Y %H:%M:%S")
 
-BLYNKCLI_VERSION="v0.2.1"
+BLYNKCLI_VERSION="v0.2.2"
 BLYNKCLI_EXECUTABLE="/usr/bin/blynkcli"
 BLYNK_JAR=""
 BLYNK_FOLDER="/var/blynk"
@@ -130,7 +130,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
                 sudo sed -i "$last_line c \
                          # Added by Blynk CLI\nif which blynkcli >> /dev/null; then\n\tblynkcli server start >> /dev/null\nfi\n\nexit 0" /etc/rc.local
               fi
-              
+
               info "Blynk successfully installed"
             else
               error "Blynk server already installed"
