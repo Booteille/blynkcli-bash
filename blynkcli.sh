@@ -167,7 +167,8 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             if [[ ! -z ${BLYNK_JAR+x} ]] && [[ $new_jar  == "$(basename "$BLYNK_JAR")" ]]; then
               warning "No update available for Blynk server"
             else
-              info "An update is available.\nDownloading new version ($new_jar)"
+              info "An update is available."
+              info "Downloading new version ($new_jar)"
               sudo -u blynk wget -c -nv --show-progress "$latest" -O "$new_path"
 
               # Replace old server
