@@ -124,10 +124,13 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
               # Update default settings for enhanced security
               printf "admin.email=admin@blynk.cc\nadmin.pass=fablab\nlogs.folder=%s/logs" $BLYNK_FOLDER | sudo -u blynk tee "$BLYNK_SERVER_CONFIG" >> /dev/null
 
-              info "Setting Blynk server to launch on startup"
-              last_line=$(grep -n '^exit 0' /etc/rc.local | tail -1 | cut -d: -f1)
-              sudo sed -i "$last_line c \
-                       # Added by Blynk CLI\nif which blynkcli >> /dev/null; then\n\tblynkcli server start >> /dev/null\nfi\n\nexit 0" /etc/rc.local
+              if ! grep -q "# Added by Blynk CLI" /etc/rc.local; then
+                info "Setting Blynk server to launch on startup"
+                last_line=$(grep -n '^exit 0' /etc/rc.local | tail -1 | cut -d: -f1)
+                sudo sed -i "$last_line c \
+                         # Added by Blynk CLI\nif which blynkcli >> /dev/null; then\n\tblynkcli server start >> /dev/null\nfi\n\nexit 0" /etc/rc.local
+              fi
+              
               info "Blynk successfully installed"
             else
               error "Blynk server already installed"
