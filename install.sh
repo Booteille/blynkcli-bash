@@ -146,7 +146,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
             sudo sed -i -e "s#^BLYNK_JAR=\".*\"#BLYNK_JAR=\"\"#" $BLYNKCLI_EXECUTABLE
 
-            # Désactive le lancement automatique lors de la connexion de l'utilisateur
+            # Turn off Blynk CLI startup on system boot
             first_line=$(grep -nr "# Added by Blynk CLI" /etc/rc.local | cut -d : -f 1 )
             last_line=$((first_line + 4))
             sudo sed -i "$first_line,$last_line d" "/etc/rc.local"
