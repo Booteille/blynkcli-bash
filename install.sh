@@ -60,11 +60,10 @@ BLYNK_BACKUP_FOLDER="$BLYNK_FOLDER/backup"
 BLYNK_SERVER_CONFIG="$BLYNK_FOLDER/server.properties"
 BLYNK_PID_PATH="/run/blynk.pid"
 
-readonly LOG_FILE="/tmp/$(basename "$0").log"
-info()    { echo -e "\e[32m[INFO]\e[0m    $DATETIME - $*" | tee -a "$LOG_FILE" >&2 ; }
-warning() { echo -e "\e[33m[WARNING]\e[0m $DATETIME - $*" | tee -a "$LOG_FILE" >&2 ; }
-error()   { echo -e "\e[31m[ERROR]\e[0m   $DATETIME - $*" | tee -a "$LOG_FILE" >&2 ; }
-fatal()   { echo -e "\e[1;31m[FATAL]\e[0m $DATETIME - $*" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
+info()    { echo -e "\e[32m[INFO]\e[0m    $DATETIME - $*"; }
+warning() { echo -e "\e[33m[WARNING]\e[0m $DATETIME - $*"; }
+error()   { echo -e "\e[31m[ERROR]\e[0m   $DATETIME - $*"; }
+fatal()   { echo -e "\e[1;31m[FATAL]\e[0m $DATETIME - $*";  exit 1; }
 
 
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
@@ -188,8 +187,12 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             if [[ ! -f $BLYNK_PID_PATH ]]; then
               if [[ -f $BLYNK_JAR ]]; then
                 info "Starting server"
+                if [[ ! -f "/tmp/blynk_start.log" ]]; then
+                  touch "/tmp/blynk_start.log"
+                fi
+
                 sudo -u blynk echo "Asking for password" >> /dev/null
-                nohup sudo -u blynk java -jar "$BLYNK_JAR" -dataFolder $BLYNK_DATA -serverConfig $BLYNK_SERVER_CONFIG > /tmp/blynkcli.log 2>&1 &
+                nohup sudo -u blynk java -jar "$BLYNK_JAR" -dataFolder $BLYNK_DATA -serverConfig $BLYNK_SERVER_CONFIG > "/tmp/blynk_start.log" 2>&1 &
                 echo $! | sudo tee $BLYNK_PID_PATH >> /dev/null
               else
                 error "Server must be installed first. Run \`blynkcli server install\` first"
