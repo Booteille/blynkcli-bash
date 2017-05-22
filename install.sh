@@ -187,12 +187,8 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
             if [[ ! -f $BLYNK_PID_PATH ]]; then
               if [[ -f $BLYNK_JAR ]]; then
                 info "Starting server"
-                if [[ ! -f "/tmp/blynk_start.log" ]]; then
-                  touch "/tmp/blynk_start.log"
-                fi
 
-                sudo -u blynk echo "Asking for password" >> /dev/null
-                nohup sudo -u blynk java -jar "$BLYNK_JAR" -dataFolder $BLYNK_DATA -serverConfig $BLYNK_SERVER_CONFIG > "/tmp/blynk_start.log" 2>&1 &
+                nohup sudo -u blynk java -jar "$BLYNK_JAR" -dataFolder $BLYNK_DATA -serverConfig $BLYNK_SERVER_CONFIG 0<&- 1>&- 2>&- &
                 echo $! | sudo tee $BLYNK_PID_PATH >> /dev/null
               else
                 error "Server must be installed first. Run \`blynkcli server install\` first"
