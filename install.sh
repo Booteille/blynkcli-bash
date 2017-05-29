@@ -281,7 +281,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
         sudo rm $BLYNKCLI_EXECUTABLE
       elif [[ $1 == "self-update" ]]; then
         info "Updating Blynk CLI"
-        latest="$(curl -s "https://api.github.com/repos/booteille/blynkcli/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)"
+        latest="$(curl -s "https://api.github.com/repos/booteille/blynkcli-bash/releases/latest" | grep 'browser_' | cut -d\" -f4 | head -n 1)"
         version=$(echo "$latest" | cut -d / -f8)
 
         if [[ "$(blynkcli version)" == "$version" ]]; then
