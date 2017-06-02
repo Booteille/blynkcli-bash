@@ -1,6 +1,6 @@
 # blynkcli-bash
 
-**(Deprecated)** *Use [blynkcli](booteille/blynkcli) instead*
+**(Deprecated)** *Use [blynk-cli](booteille/blynk-cli) instead*
 
 A short utility to manage Blynk server from CLI
 
